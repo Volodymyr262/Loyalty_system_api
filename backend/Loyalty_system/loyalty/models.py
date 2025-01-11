@@ -19,6 +19,21 @@ class PointBalance(models.Model):
     class Meta:
         unique_together = ('user_id', 'program')
 
+
+    def add_points(self, points):
+        """ Add points to the user's  balance"""
+        self.balance += points
+        self.save()
+
+
+    def redeem_points(self, points):
+        """ Redeem points from the user's  balance"""
+        if points > self.balance:
+            raise ValueError('Insufficient points')
+        self.balance -= points
+        self.save()
+
+
     def __str__(self):
         return f"User {self.user_id} - {self.program.name}: {self.balance} points"
 
