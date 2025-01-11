@@ -37,10 +37,10 @@ class TransactionViewSet(viewsets.ModelViewSet):
 
 class PointsViewSet(ViewSet):
     def create(self, request):
-        action = request.query_params.get('action')  # Example: /points/?action=earn
+        action = request.query_params.get('action')  # /points/?action=earn or redeem
         user_id = request.data.get('user_id')
         program_id = request.data.get('program_id')
-        points = request.data.get('points')
+        points = request.data.get('points')  # Accept 'amount' instead of 'points'
 
         try:
             if action == "earn":

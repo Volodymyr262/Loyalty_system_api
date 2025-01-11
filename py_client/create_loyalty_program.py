@@ -1,18 +1,16 @@
 import requests
 
-# Base API URL
-BASE_URL = "http://127.0.0.1:8000/api/points/"
+BASE_URL = "http://127.0.0.1:8000/api/loyalty-programs/"
 
 
-# Payload for Redeeming Points
-payload = {
-    "user_id": 12,
-    "program_id": 7,
-    "points": 100
+data = {
+    'name': 'LP3',
+    'description': 'aaaabbbsss',
+    'point_conversion_rate': 0.5
+
 }
 
-# Send POST Request to Redeem Points
-response = requests.post(f"{BASE_URL}?action=earn", json=payload)
+response = requests.post(f"{BASE_URL}", json=data)
 
 # Print Results
 if response.status_code == 200:
