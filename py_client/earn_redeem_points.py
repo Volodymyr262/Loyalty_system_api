@@ -7,7 +7,7 @@ BASE_URL = "http://127.0.0.1:8000/api/points/"
 # Payload for Redeeming Points
 payload = {
     "user_id": 12,
-    "program_id": 7,
+    "program_id": 9,
     "points": 100
 }
 

@@ -4,7 +4,7 @@ BASE_URL = "http://127.0.0.1:8000/api/loyalty-programs/"
 
 
 data = {
-    'name': 'LP3',
+    'name': 'B',
     'description': 'aaaabbbsss',
     'point_conversion_rate': 0.5
 

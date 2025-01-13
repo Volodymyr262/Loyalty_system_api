@@ -5,9 +5,9 @@ BASE_URL = "http://127.0.0.1:8000/api/transactions/"
 
 # User ID for whom to fetch transactions
 USER_ID = 12
-
+PROGRAM_ID = 9
 # Query parameters
-params = {"user_id": USER_ID}
+params = {"user_id": USER_ID, "program_id": PROGRAM_ID}
 
 # Send GET request
 response = requests.get(BASE_URL, params=params)
