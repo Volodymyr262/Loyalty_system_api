@@ -52,3 +52,19 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.transaction_type} {self.points} points - User {self.user_id}"
+
+
+class LoyaltyTier(models.Model):
+    tier_name = models.CharField(max_length=40)
+    program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="loyalty_tiers")
+    points_to_reach = models.PositiveIntegerField()  # Enforce positive values
+    description = models.TextField(blank=True, null=True)  # Optional description for the tier
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['tier_name', 'program'], name='unique_tier_per_program'),
+        ]
+        ordering = ['points_to_reach']  # Default ordering by points required
+
+    def __str__(self):
+        return f"{self.tier_name} (Program: {self.program.name}, Points: {self.points_to_reach})"

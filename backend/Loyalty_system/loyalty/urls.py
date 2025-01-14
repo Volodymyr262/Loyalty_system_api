@@ -1,7 +1,7 @@
 from django.urls import path, include
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
-from .views import LoyaltyProgramViewSet, PointBalanceViewSet, TransactionViewSet, PointsViewSet
+from .views import LoyaltyProgramViewSet, PointBalanceViewSet, TransactionViewSet, PointsViewSet, LoyaltyTierViewSet
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -24,6 +24,7 @@ router.register(r'loyalty-programs', LoyaltyProgramViewSet)
 router.register(r'point-balances', PointBalanceViewSet)
 router.register(r'transactions', TransactionViewSet)
 router.register(r'points', PointsViewSet, basename='points')
+router.register(r'loyalty-tier', LoyaltyTierViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),

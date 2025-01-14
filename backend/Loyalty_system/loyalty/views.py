@@ -1,17 +1,21 @@
 from django.db.models import Q
 from rest_framework import viewsets, status
-from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from .models import LoyaltyProgram, PointBalance, Transaction
-from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
+from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer
 from .services import redeem_points, earn_points
 
 
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyProgram.objects.all()
     serializer_class = LoyaltyProgramSerializer
+
+
+class LoyaltyTierViewSet(viewsets.ModelViewSet):
+    queryset = LoyaltyTier.objects.all()
+    serializer_class = LoyaltyTierSerializer
 
 
 class PointBalanceViewSet(viewsets.ModelViewSet):
@@ -98,5 +102,6 @@ class PointsViewSet(ViewSet):
             return Response({"message": message, "balance": balance.balance}, status=status.HTTP_200_OK)
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
 
 
