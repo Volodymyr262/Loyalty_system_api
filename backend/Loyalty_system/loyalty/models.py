@@ -12,7 +12,7 @@ class LoyaltyProgram(models.Model):
 
 
 class PointBalance(models.Model):
-    user_id = models.IntegerField()  # Reference external user by ID
+    user_id = models.CharField(max_length=255)  # Use CharField for flexible user ID
     program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="balances")
     balance = models.IntegerField(default=0)
 
@@ -44,7 +44,7 @@ class Transaction(models.Model):
         ('redeem', 'Redeem'),
     ]
 
-    user_id = models.IntegerField()  # Reference external user by ID
+    user_id = models.CharField(max_length=255)  # Use CharField for flexible user ID
     program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="transactions")
     transaction_type = models.CharField(max_length=10, choices=TRANSACTION_TYPES)
     points = models.IntegerField()
