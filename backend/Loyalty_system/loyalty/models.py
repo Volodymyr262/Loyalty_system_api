@@ -68,3 +68,26 @@ class LoyaltyTier(models.Model):
 
     def __str__(self):
         return f"{self.tier_name} (Program: {self.program.name}, Points: {self.points_to_reach})"
+
+
+class Achievement(models.Model):
+    TYPE_CHOICES = [
+        ('action', 'Action-Based'),
+        ('milestone', 'Milestone-Based'),
+        ('time', 'Time-Based'),
+        ('fun', 'Fun/Unexpected'),
+    ]
+
+    name = models.CharField(max_length=100)
+    description = models.TextField()
+    program = models.ForeignKey(
+        'LoyaltyProgram',
+        on_delete=models.CASCADE,
+        related_name="achievements"
+    )
+    points_required = models.PositiveIntegerField(default=0, blank=True)  # Optional
+    type = models.CharField(max_length=20, choices=TYPE_CHOICES, default='action')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} ({self.type})"
