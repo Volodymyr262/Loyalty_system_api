@@ -1,9 +1,10 @@
 from django.db.models import Q
 from rest_framework import viewsets, status
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, Achievement
 from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer
 from .services import redeem_points, earn_points
 

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, Achievement
 
 
 class LoyaltyProgramSerializer(serializers.ModelSerializer):
@@ -29,3 +29,5 @@ class LoyaltyTierSerializer(serializers.ModelSerializer):
         if value <= 0:
             raise serializers.ValidationError("Points to reach must be greater than zero.")
         return value
+
+
