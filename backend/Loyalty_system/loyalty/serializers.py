@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, Achievement
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
 
 
 class LoyaltyProgramSerializer(serializers.ModelSerializer):
