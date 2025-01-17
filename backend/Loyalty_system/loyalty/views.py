@@ -4,7 +4,7 @@ from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, Achievement
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
 from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer
 from .services import redeem_points, earn_points
 
@@ -83,12 +83,21 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class PointsViewSet(ViewSet):
-    def create(self, request):
+class PointsViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for handling point-related actions (earn/redeem points).
+    """
+    queryset = PointBalance.objects.all()
+    serializer_class = PointBalanceSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Override the create method to handle earn/redeem actions via `action` query parameter.
+        """
         action = request.query_params.get('action')  # /points/?action=earn or redeem
         user_id = request.data.get('user_id')
         program_id = request.data.get('program_id')
-        points = request.data.get('points')  # Accept 'amount' instead of 'points'
+        points = request.data.get('points')  # Accept 'points'
 
         try:
             if action == "earn":
@@ -100,9 +109,10 @@ class PointsViewSet(ViewSet):
             else:
                 return Response({"error": "Invalid action"}, status=status.HTTP_400_BAD_REQUEST)
 
-            return Response({"message": message, "balance": balance.balance}, status=status.HTTP_200_OK)
+            return Response(
+                {"message": message, "balance": balance.balance},
+                status=status.HTTP_200_OK
+            )
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
 
