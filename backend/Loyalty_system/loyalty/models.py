@@ -55,6 +55,10 @@ class Transaction(models.Model):
 
 
 class LoyaltyTier(models.Model):
+    """ LoyaltyTier model represents the different levels or tiers that users can achieve
+    within a specific loyalty program. Each tier is associated with a loyalty program
+    and defines the number of points a user needs to accumulate in order to reach that tier
+    """
     tier_name = models.CharField(max_length=40)
     program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="loyalty_tiers")
     points_to_reach = models.PositiveIntegerField()  # Enforce positive values
