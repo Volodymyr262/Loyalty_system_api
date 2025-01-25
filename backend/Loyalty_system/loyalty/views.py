@@ -83,6 +83,8 @@ class TransactionViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+
+
 class PointsViewSet(viewsets.ModelViewSet):
     """
     A viewset for handling point-related actions (earn/redeem points).
@@ -115,4 +117,6 @@ class PointsViewSet(viewsets.ModelViewSet):
             )
         except ValueError as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 

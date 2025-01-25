@@ -1,5 +1,5 @@
 from django.db import models
-
+from datetime import timedelta
 
 class LoyaltyProgram(models.Model):
     name = models.CharField(max_length=255)
@@ -73,3 +73,48 @@ class LoyaltyTier(models.Model):
     def __str__(self):
         return f"{self.tier_name} (Program: {self.program.name}, Points: {self.points_to_reach})"
 
+
+
+class SpecialTask(models.Model):
+    name = models.CharField(max_length=100)
+    program = models.ForeignKey('LoyaltyProgram', on_delete=models.CASCADE, related_name="special_tasks")
+    description = models.TextField()
+    points_required = models.PositiveIntegerField(default=0)  # E.g., Earn 200 points
+    transactions_required = models.PositiveIntegerField(default=0)  # E.g., Complete 4 transactions
+    duration_days = models.PositiveIntegerField()  # E.g., Task must be completed in 2 days
+    reward_points = models.PositiveIntegerField(default=0)  # Bonus points
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.name} (Program: {self.program.name})"
+
+    def get_deadline(self):
+        return self.created_at + timedelta(days=self.duration_days)
+
+
+
+class UserTaskProgress(models.Model):
+    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name="task_progress")
+    task = models.ForeignKey(SpecialTask, on_delete=models.CASCADE, related_name="user_progress")
+    points_earned = models.PositiveIntegerField(default=0)
+    transactions_count = models.PositiveIntegerField(default=0)
+    completed_at = models.DateTimeField(blank=True, null=True)
+
+    def is_completed(self):
+        return (
+            self.points_earned >= self.task.points_required and
+            self.transactions_count >= self.task.transactions_required
+        )
+
+    def reward_user(self):
+        if self.is_completed() and not self.completed_at:
+            # Award bonus points
+            self.user.points += self.task.reward_points
+            self.user.save()
+
+            # Optionally assign badge
+            if self.task.badge_name:
+                Badge.objects.create(user=self.user, name=self.task.badge_name)
+
+            self.completed_at = timezone.now()
+            self.save()
