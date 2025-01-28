@@ -1,12 +1,15 @@
 from django.db.models import Q
 from rest_framework import viewsets, status
+from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 
-from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier
-from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer
-from .services import redeem_points, earn_points
+from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, UserTaskProgress, SpecialTask
+from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer, \
+    UserTaskProgressSerializer, SpecialTaskSerializer
+from .services import redeem_points, earn_points, update_task_progress_for_transaction
 
 
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):
@@ -82,7 +85,22 @@ class TransactionViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(transactions, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    @action(detail=False, methods=["post"])
+    def create_and_update_task_progress(self, request):
+        """
+        Custom action to create a transaction and automatically check task progress.
+        """
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        transaction = serializer.save()  # Save the transaction
 
+        # Update user task progress after transaction creation
+        update_task_progress_for_transaction(transaction)
+
+        return Response(
+            {"message": "Transaction created and progress checked!", "transaction": serializer.data},
+            status=status.HTTP_201_CREATED
+        )
 
 
 class PointsViewSet(viewsets.ModelViewSet):
@@ -120,3 +138,55 @@ class PointsViewSet(viewsets.ModelViewSet):
 
 
 
+class SpecialTaskViewSet(viewsets.ModelViewSet):
+    """
+    A viewset for managing Special Tasks.
+    Supports CRUD operations and filtering by program_id.
+    """
+    queryset = SpecialTask.objects.all()
+    serializer_class = SpecialTaskSerializer
+
+    def get_queryset(self):
+        """
+        Filter tasks by program_id if provided in query parameters.
+        """
+        queryset = super().get_queryset()
+        program_id = self.request.query_params.get('program_id')
+        if program_id:
+            queryset = queryset.filter(program_id=program_id)
+        return queryset
+
+
+class UserTaskProgressViewSet(viewsets.ModelViewSet):
+    queryset = UserTaskProgress.objects.all()
+    serializer_class = UserTaskProgressSerializer
+
+    def create(self, request, *args, **kwargs):
+        """
+        Create or update progress for a user on a specific task.
+        """
+        user_id = request.data.get('user_id')
+        task_id = request.data.get('task')
+
+        if not user_id or not task_id:
+            return Response({"error": "user_id and task are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            task = SpecialTask.objects.get(id=task_id)
+        except SpecialTask.DoesNotExist:
+            return Response({"error": f"Task with id {task_id} does not exist."}, status=status.HTTP_404_NOT_FOUND)
+
+        # Get or create progress entry
+        progress, created = UserTaskProgress.objects.get_or_create(user_id=user_id, task=task)
+
+        # Update progress details
+        serializer = self.get_serializer(progress, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        progress = serializer.save()
+
+        # ✅ **Ensure `reward_user()` is called**
+        progress.reward_user()  # This will now always check if the task is completed
+
+        return Response(
+            self.get_serializer(progress).data,
+            status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)

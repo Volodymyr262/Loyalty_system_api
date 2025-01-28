@@ -1,5 +1,8 @@
 from django.db import models
-from datetime import timedelta
+from datetime import timedelta, timezone
+
+from django.utils.timezone import now
+
 
 class LoyaltyProgram(models.Model):
     name = models.CharField(max_length=255)
@@ -94,27 +97,31 @@ class SpecialTask(models.Model):
 
 
 class UserTaskProgress(models.Model):
-    user = models.ForeignKey('User', on_delete=models.CASCADE, related_name="task_progress")
+    user_id = models.CharField(max_length=255)
     task = models.ForeignKey(SpecialTask, on_delete=models.CASCADE, related_name="user_progress")
     points_earned = models.PositiveIntegerField(default=0)
     transactions_count = models.PositiveIntegerField(default=0)
     completed_at = models.DateTimeField(blank=True, null=True)
 
     def is_completed(self):
+        """
+        Check if the user has met the task requirements.
+        """
         return (
             self.points_earned >= self.task.points_required and
             self.transactions_count >= self.task.transactions_required
         )
 
     def reward_user(self):
+        """
+        Reward the user and mark the task as completed.
+        """
         if self.is_completed() and not self.completed_at:
-            # Award bonus points
-            self.user.points += self.task.reward_points
-            self.user.save()
+            # ✅ **Mark task as completed**
+            self.completed_at = now()
 
-            # Optionally assign badge
-            if self.task.badge_name:
-                Badge.objects.create(user=self.user, name=self.task.badge_name)
+            # ✅ **Debugging Print Statement**
+            print(f"✅ User {self.user_id} has completed task '{self.task.name}'. Marking as completed.")
 
-            self.completed_at = timezone.now()
+            # ✅ **Save the updated progress**
             self.save()
