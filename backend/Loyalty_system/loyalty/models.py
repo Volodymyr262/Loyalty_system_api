@@ -15,30 +15,29 @@ class LoyaltyProgram(models.Model):
 
 
 class PointBalance(models.Model):
-    user_id = models.CharField(max_length=255)  # Use CharField for flexible user ID
+    user_id = models.CharField(max_length=255)
     program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="balances")
     balance = models.IntegerField(default=0)
+    total_points_earned = models.IntegerField(default=0)  # ✅ Track total earned points
 
     class Meta:
         unique_together = ('user_id', 'program')
 
-
     def add_points(self, points):
-        """ Add points to the user's  balance"""
+        """ ✅ Add points and update total earned points """
         self.balance += points
-        self.save()
-
+        self.total_points_earned += points  # ✅ Ensure total earned points updates
+        self.save(update_fields=['balance', 'total_points_earned'])  # ✅ Force DB save
 
     def redeem_points(self, points):
-        """ Redeem points from the user's  balance"""
+        """ ✅ Redeem points from balance """
         if points > self.balance:
             raise ValueError('Insufficient points')
         self.balance -= points
-        self.save()
-
+        self.save(update_fields=['balance'])
 
     def __str__(self):
-        return f"User {self.user_id} - {self.program.name}: {self.balance} points"
+        return f"User {self.user_id} - {self.program.name}: {self.balance} points (Total Earned: {self.total_points_earned})"
 
 
 class Transaction(models.Model):
@@ -58,20 +57,16 @@ class Transaction(models.Model):
 
 
 class LoyaltyTier(models.Model):
-    """ LoyaltyTier model represents the different levels or tiers that users can achieve
-    within a specific loyalty program. Each tier is associated with a loyalty program
-    and defines the number of points a user needs to accumulate in order to reach that tier
-    """
     tier_name = models.CharField(max_length=40)
     program = models.ForeignKey(LoyaltyProgram, on_delete=models.CASCADE, related_name="loyalty_tiers")
-    points_to_reach = models.PositiveIntegerField()  # Enforce positive values
-    description = models.TextField(blank=True, null=True)  # Optional description for the tier
+    points_to_reach = models.PositiveIntegerField()  # Required points to reach the tier
+    description = models.TextField(blank=True, null=True)  # Optional description
 
     class Meta:
         constraints = [
             models.UniqueConstraint(fields=['tier_name', 'program'], name='unique_tier_per_program'),
         ]
-        ordering = ['points_to_reach']  # Default ordering by points required
+        ordering = ['points_to_reach']  # Ensures we get the lowest tier first
 
     def __str__(self):
         return f"{self.tier_name} (Program: {self.program.name}, Points: {self.points_to_reach})"

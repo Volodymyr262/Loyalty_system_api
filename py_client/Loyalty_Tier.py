@@ -1,58 +1,106 @@
 import requests
 
-BASE_URL = "http://127.0.0.1:8000/api/loyalty-tier/"
+BASE_URL = "http://127.0.0.1:8000/api"  # Change if necessary
 
-def create_tier(tier_name, program_id, points_to_reach, description=""):
-    """Create a new loyalty tier."""
+# User and Program Data
+USER_ID = "12345"
+PROGRAM_NAME = "VIP Rewards"
+
+LOYALTY_TIERS = [
+    {"tier_name": "Bronze", "points_to_reach": 100},
+    {"tier_name": "Silver", "points_to_reach": 300},
+    {"tier_name": "Gold", "points_to_reach": 500},
+]
+
+# Endpoints
+PROGRAMS_ENDPOINT = f"{BASE_URL}/loyalty-programs/"
+TIERS_ENDPOINT = f"{BASE_URL}/loyalty-tiers/"
+POINT_BALANCE_ENDPOINT = f"{BASE_URL}/point-balances/"
+TRANSACTION_ENDPOINT = f"{BASE_URL}/transactions/"
+
+# ---- 1. Create Loyalty Program ----
+def create_loyalty_program():
+    payload = {"name": PROGRAM_NAME, "description": "Exclusive VIP Rewards"}
+    response = requests.post(PROGRAMS_ENDPOINT, json=payload)
+    print(f"[CREATE LOYALTY PROGRAM] {response.status_code}: {response.json()}")
+    return response.json()["id"]
+
+# ---- 2. Create Tiers ----
+def create_loyalty_tiers(program_id):
+    tier_ids = []
+    for tier in LOYALTY_TIERS:
+        tier["program"] = program_id
+        response = requests.post(TIERS_ENDPOINT, json=tier)
+        print(f"[CREATE TIER {tier['tier_name']}] {response.status_code}: {response.json()}")
+        tier_ids.append(response.json()["id"])
+    return tier_ids
+
+# ---- 3. Create User's Point Balance ----
+def create_point_balance(user_id, program_id):
+    payload = {"user_id": user_id, "program": program_id, "balance": 0, "total_points_earned": 0}
+    response = requests.post(POINT_BALANCE_ENDPOINT, json=payload)
+    print(f"[CREATE POINT BALANCE] {response.status_code}: {response.json()}")
+    return response.json()["id"]
+
+# ---- 4. Add Points ----
+def add_points(user_id, program_id, points):
     payload = {
-        "tier_name": tier_name,
+        "user_id": user_id,
         "program": program_id,
-        "points_to_reach": points_to_reach,
-        "description": description
+        "transaction_type": "earn",
+        "points": points
     }
-    response = requests.post(BASE_URL, json=payload)
-    print(f"Create Tier Response ({response.status_code}):", response.json())
+    response = requests.post(TRANSACTION_ENDPOINT, json=payload)
+    print(f"[EARN {points} POINTS] {response.status_code}: {response.json()}")
 
-def get_tier(tier_id):
-    """Retrieve a loyalty tier by ID."""
-    response = requests.get(f"{BASE_URL}{tier_id}/")
-    print(f"Get Tier Response ({response.status_code}):", response.json())
+# ---- 5. Redeem Points ----
+def redeem_points(user_id, program_id, points):
+    payload = {
+        "user_id": user_id,
+        "program": program_id,
+        "transaction_type": "redeem",
+        "points": points
+    }
+    response = requests.post(TRANSACTION_ENDPOINT, json=payload)
+    print(f"[REDEEM {points} POINTS] {response.status_code}: {response.json()}")
 
-def list_tiers():
-    """List all loyalty tiers."""
-    response = requests.get(BASE_URL)
-    print(f"List Tiers Response ({response.status_code}):", response.json())
+# ---- 6. Check User's Balance & Tier ----
+def check_user_balance(user_id, program_id):
+    params = {"user_id": user_id, "program_id": program_id}  # ✅ Use 'program_id'
+    response = requests.get(POINT_BALANCE_ENDPOINT, params=params)  # ✅ Pass as `params`
+    print(f"[CHECK BALANCE] {response.status_code}: {response.json()}")
+    return response.json()
 
-def update_tier(tier_id, new_data):
-    """Update an existing loyalty tier."""
-    response = requests.put(f"{BASE_URL}{tier_id}/", json=new_data)
-    print(f"Update Tier Response ({response.status_code}):", response.json())
+# ---- RUN ALL TESTS ----
+def run_tests():
+    print("🚀 Starting PointBalance Tests...")
 
-def delete_tier(tier_id):
-    """Delete a loyalty tier by ID."""
-    response = requests.delete(f"{BASE_URL}{tier_id}/")
-    print(f"Delete Tier Response ({response.status_code}):", response.text)
+    # Step 1: Create Loyalty Program
+    program_id = create_loyalty_program()
 
-# Example Test Scenarios
+    # Step 2: Create Loyalty Tiers
+    create_loyalty_tiers(program_id)
+
+    # Step 3: Create User's Point Balance
+    create_point_balance(USER_ID, program_id)
+
+    # Step 4: User Earns 150 Points (Should qualify for Bronze)
+    add_points(USER_ID, program_id, 150)
+    check_user_balance(USER_ID, program_id)
+
+    # Step 5: User Earns 200 More Points (Should qualify for Silver)
+    add_points(USER_ID, program_id, 200)
+    check_user_balance(USER_ID, program_id)
+
+    # Step 6: User Redeems 200 Points (Should NOT lose tier)
+    redeem_points(USER_ID, program_id, 200)
+    check_user_balance(USER_ID, program_id)
+
+    # Step 7: User Earns 300 More Points (Should qualify for Gold)
+    add_points(USER_ID, program_id, 300)
+    check_user_balance(USER_ID, program_id)
+
+    print("✅ All PointBalance tests completed successfully!")
+
 if __name__ == "__main__":
-    # Step 1: Create a new loyalty tier
-    create_tier("Gold", program_id=8, points_to_reach=1000, description="Top-tier membership benefits.")
-    create_tier("Silver", program_id=8, points_to_reach=500, description="Mid-tier membership benefits.")
-
-    # Step 2: List all tiers
-    list_tiers()
-
-    # Step 3: Get a specific tier (replace <id> with the actual ID from the list_tiers output)
-    get_tier(tier_id=1)
-
-    # Step 4: Update a specific tier
-    update_tier(tier_id=1, new_data={
-        "tier_name": "Platinum",
-        "program": 1,
-        "points_to_reach": 2000,
-        "description": "Updated top-tier membership benefits."
-    })
-
-    # Step 5: Delete a specific tier
-    delete_tier(tier_id=2)  # Replace with the ID of the tier to delete
-
+    run_tests()

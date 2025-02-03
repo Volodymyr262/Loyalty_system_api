@@ -25,7 +25,7 @@ router.register(r'loyalty-programs', LoyaltyProgramViewSet)
 router.register(r'point-balances', PointBalanceViewSet)
 router.register(r'transactions', TransactionViewSet)
 router.register(r'points', PointsViewSet, basename='points')
-router.register(r'loyalty-tier', LoyaltyTierViewSet)
+router.register(r'loyalty-tiers', LoyaltyTierViewSet)
 router.register(r'special-tasks', SpecialTaskViewSet, basename='special-task')
 router.register(r'user-task-progress', UserTaskProgressViewSet, basename='user-task-progress')
 

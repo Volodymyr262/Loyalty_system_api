@@ -11,7 +11,7 @@ class LoyaltyProgramSerializer(serializers.ModelSerializer):
 class PointBalanceSerializer(serializers.ModelSerializer):
     class Meta:
         model = PointBalance
-        fields = '__all__'
+        fields = ['id', 'user_id', 'balance', 'total_points_earned', 'program']
 
 
 class TransactionSerializer(serializers.ModelSerializer):
