@@ -18,12 +18,14 @@ TIERS_ENDPOINT = f"{BASE_URL}/loyalty-tiers/"
 POINT_BALANCE_ENDPOINT = f"{BASE_URL}/point-balances/"
 TRANSACTION_ENDPOINT = f"{BASE_URL}/transactions/"
 
+
 # ---- 1. Create Loyalty Program ----
 def create_loyalty_program():
     payload = {"name": PROGRAM_NAME, "description": "Exclusive VIP Rewards"}
     response = requests.post(PROGRAMS_ENDPOINT, json=payload)
     print(f"[CREATE LOYALTY PROGRAM] {response.status_code}: {response.json()}")
     return response.json()["id"]
+
 
 # ---- 2. Create Tiers ----
 def create_loyalty_tiers(program_id):
@@ -35,12 +37,14 @@ def create_loyalty_tiers(program_id):
         tier_ids.append(response.json()["id"])
     return tier_ids
 
+
 # ---- 3. Create User's Point Balance ----
 def create_point_balance(user_id, program_id):
     payload = {"user_id": user_id, "program": program_id, "balance": 0, "total_points_earned": 0}
     response = requests.post(POINT_BALANCE_ENDPOINT, json=payload)
     print(f"[CREATE POINT BALANCE] {response.status_code}: {response.json()}")
     return response.json()["id"]
+
 
 # ---- 4. Add Points ----
 def add_points(user_id, program_id, points):
@@ -53,6 +57,7 @@ def add_points(user_id, program_id, points):
     response = requests.post(TRANSACTION_ENDPOINT, json=payload)
     print(f"[EARN {points} POINTS] {response.status_code}: {response.json()}")
 
+
 # ---- 5. Redeem Points ----
 def redeem_points(user_id, program_id, points):
     payload = {
@@ -64,12 +69,25 @@ def redeem_points(user_id, program_id, points):
     response = requests.post(TRANSACTION_ENDPOINT, json=payload)
     print(f"[REDEEM {points} POINTS] {response.status_code}: {response.json()}")
 
+
 # ---- 6. Check User's Balance & Tier ----
 def check_user_balance(user_id, program_id):
-    params = {"user_id": user_id, "program_id": program_id}  # ✅ Use 'program_id'
-    response = requests.get(POINT_BALANCE_ENDPOINT, params=params)  # ✅ Pass as `params`
-    print(f"[CHECK BALANCE] {response.status_code}: {response.json()}")
-    return response.json()
+    params = {"user_id": user_id, "program_id": program_id}
+    response = requests.get(POINT_BALANCE_ENDPOINT, params=params)
+
+    if response.status_code == 200:
+        data = response.json()
+        balance = data.get("balance", 0)
+        total_points_earned = data.get("total_points_earned", 0)
+        tier = data.get("tier", "No Tier")  # API should return the current tier
+
+        print(
+            f"[CHECK BALANCE] {response.status_code}: User {user_id} - Balance: {balance} | Total Earned: {total_points_earned} | Tier: {tier}")
+        return data
+    else:
+        print(f"[CHECK BALANCE] {response.status_code}: {response.json()}")
+        return None
+
 
 # ---- RUN ALL TESTS ----
 def run_tests():
@@ -101,6 +119,7 @@ def run_tests():
     check_user_balance(USER_ID, program_id)
 
     print("✅ All PointBalance tests completed successfully!")
+
 
 if __name__ == "__main__":
     run_tests()

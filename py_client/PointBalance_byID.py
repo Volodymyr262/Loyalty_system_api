@@ -5,7 +5,7 @@ BASE_URL = "http://127.0.0.1:8000/api/point-balances/"
 
 # User ID for whom to fetch transactions
 USER_ID = 12
-PROGRAM_ID = 8
+PROGRAM_ID = 10
 # Query parameters
 params = {"user_id": USER_ID, "program_id": PROGRAM_ID}
 

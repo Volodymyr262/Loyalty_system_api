@@ -9,9 +9,14 @@ class LoyaltyProgramSerializer(serializers.ModelSerializer):
 
 
 class PointBalanceSerializer(serializers.ModelSerializer):
+    tier = serializers.SerializerMethodField()
+
+    def get_tier(self, obj):
+        return obj.get_loyalty_tier()  # ✅ Include tier dynamically
+
     class Meta:
         model = PointBalance
-        fields = ['id', 'user_id', 'balance', 'total_points_earned', 'program']
+        fields = ['id', 'user_id', 'balance', 'total_points_earned', 'program', 'tier']
 
 
 class TransactionSerializer(serializers.ModelSerializer):
