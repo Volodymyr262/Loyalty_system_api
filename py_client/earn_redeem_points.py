@@ -6,13 +6,13 @@ BASE_URL = "http://127.0.0.1:8000/api/points/"
 
 # Payload for Redeeming Points
 payload = {
-    "user_id": 12,
-    "program_id": 10,
+    "user_id": 12345,
+    "program_id": 33,
     "points": 100
 }
 
 # Send POST Request to Redeem Points
-response = requests.post(f"{BASE_URL}?action=earn", json=payload)
+response = requests.post(f"{BASE_URL}?action=redeem", json=payload)
 
 # Print Results
 if response.status_code == 200:
