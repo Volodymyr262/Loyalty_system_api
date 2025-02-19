@@ -1,13 +1,35 @@
 from django.db.models import Q
-from rest_framework import viewsets, status, permissions
+from rest_framework import viewsets, status, permissions, generics
+from rest_framework.authtoken.models import Token
+from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
 from .permissions import IsOwnerOfLoyaltyProgram
 from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, UserTaskProgress, SpecialTask
 from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer, \
-    UserTaskProgressSerializer, SpecialTaskSerializer
+    UserTaskProgressSerializer, SpecialTaskSerializer, UserSerializer
 from .services import redeem_points, earn_points, update_task_progress_for_transaction
+
+
+class RegisterView(generics.CreateAPIView):
+    """
+    ✅ Public view for user registration.
+    """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = [permissions.AllowAny]  # ✅ Registration is open to everyone
+
+class LoginView(ObtainAuthToken):
+    """
+    ✅ Public view for user login.
+    """
+    permission_classes = [permissions.AllowAny]  # ✅ Login is open to everyone
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        token = Token.objects.get(key=response.data['token'])
+        return Response({'token': token.key, 'user_id': token.user.id, 'username': token.user.username})
 
 
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):
