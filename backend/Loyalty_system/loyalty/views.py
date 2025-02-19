@@ -1,11 +1,9 @@
 from django.db.models import Q
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, permissions
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ViewSet
-
+from .permissions import IsOwnerOfLoyaltyProgram
 from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, UserTaskProgress, SpecialTask
 from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer, \
     UserTaskProgressSerializer, SpecialTaskSerializer
@@ -15,17 +13,18 @@ from .services import redeem_points, earn_points, update_task_progress_for_trans
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyProgram.objects.all()
     serializer_class = LoyaltyProgramSerializer
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
 
 
 class LoyaltyTierViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyTier.objects.all()
     serializer_class = LoyaltyTierSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
 
 class PointBalanceViewSet(viewsets.ModelViewSet):
     queryset = PointBalance.objects.all()
     serializer_class = PointBalanceSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
     def list(self, request, *args, **kwargs):
         """Override list to filter point balances by user_id and program_id."""
         user_id = request.query_params.get('user_id')  # Query param for user ID
@@ -52,7 +51,7 @@ class PointBalanceViewSet(viewsets.ModelViewSet):
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
     def list(self, request, *args, **kwargs):
         """Override list to filter transactions by user_id, program_id, and date range."""
         user_id = request.query_params.get('user_id')
@@ -109,7 +108,7 @@ class PointsViewSet(viewsets.ModelViewSet):
     """
     queryset = PointBalance.objects.all()
     serializer_class = PointBalanceSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
     def create(self, request, *args, **kwargs):
         """
         Override the create method to handle earn/redeem actions via `action` query parameter.
@@ -145,7 +144,7 @@ class SpecialTaskViewSet(viewsets.ModelViewSet):
     """
     queryset = SpecialTask.objects.all()
     serializer_class = SpecialTaskSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
     def get_queryset(self):
         """
         Filter tasks by program_id if provided in query parameters.
@@ -160,7 +159,7 @@ class SpecialTaskViewSet(viewsets.ModelViewSet):
 class UserTaskProgressViewSet(viewsets.ModelViewSet):
     queryset = UserTaskProgress.objects.all()
     serializer_class = UserTaskProgressSerializer
-
+    permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
     def create(self, request, *args, **kwargs):
         """
         Create or update progress for a user on a specific task.
@@ -184,7 +183,7 @@ class UserTaskProgressViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
         progress = serializer.save()
 
-        # ✅ **Ensure `reward_user()` is called**
+        # **Ensure `reward_user()` is called**
         progress.reward_user()  # This will now always check if the task is completed
 
         return Response(
