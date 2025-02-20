@@ -2,7 +2,7 @@ from django.urls import path, include
 from rest_framework import permissions
 from rest_framework.routers import DefaultRouter
 from .views import LoyaltyProgramViewSet, PointBalanceViewSet, TransactionViewSet, PointsViewSet, LoyaltyTierViewSet, \
-    UserTaskProgressViewSet, SpecialTaskViewSet, RegisterView, LoginView
+    UserTaskProgressViewSet, SpecialTaskViewSet, RegisterView, LoginView, LogoutView
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -33,6 +33,7 @@ router.register(r'user-task-progress', UserTaskProgressViewSet, basename='user-t
 urlpatterns = [
     path('api/', include(router.urls)),
     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-path('api/register/', RegisterView.as_view(), name='register'),  #  Register
+    path('api/register/', RegisterView.as_view(), name='register'),  #  Register
     path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),  #  Logout
 ]

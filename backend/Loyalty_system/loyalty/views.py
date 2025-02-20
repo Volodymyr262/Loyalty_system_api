@@ -1,10 +1,13 @@
+from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import viewsets, status, permissions, generics
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
 from rest_framework.exceptions import PermissionDenied
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from .permissions import IsOwnerOfLoyaltyProgram
 from .models import LoyaltyProgram, PointBalance, Transaction, LoyaltyTier, UserTaskProgress, SpecialTask
 from .serializers import LoyaltyProgramSerializer, PointBalanceSerializer, TransactionSerializer, LoyaltyTierSerializer, \
@@ -14,22 +17,37 @@ from .services import redeem_points, earn_points, update_task_progress_for_trans
 
 class RegisterView(generics.CreateAPIView):
     """
-    ✅ Public view for user registration.
+     Public view for user registration.
     """
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.AllowAny]  # ✅ Registration is open to everyone
+    permission_classes = [permissions.AllowAny]  #  Registration is open to everyone
 
 class LoginView(ObtainAuthToken):
     """
-    ✅ Public view for user login.
+     Public view for user login.
     """
-    permission_classes = [permissions.AllowAny]  # ✅ Login is open to everyone
+    permission_classes = [permissions.AllowAny]  #  Login is open to everyone
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         token = Token.objects.get(key=response.data['token'])
         return Response({'token': token.key, 'user_id': token.user.id, 'username': token.user.username})
+
+
+class LogoutView(APIView):
+    """
+        Logout a user by deleting their authentication token.
+       """
+    permission_classes = [IsAuthenticated]  #  Only logged-in users can logout
+
+    def post(self, request):
+        """  Deletes the user's token and logs them out """
+        try:
+            request.user.auth_token.delete()  # Delete the user's token
+            return Response({"message": "Successfully logged out."}, status=200)
+        except:
+            return Response({"error": "Something went wrong."}, status=400)
 
 
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):

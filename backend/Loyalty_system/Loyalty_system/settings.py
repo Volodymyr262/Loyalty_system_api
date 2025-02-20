@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'drf_yasg',
     'loyalty',
     'rest_framework',
+    'rest_framework.authtoken',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
