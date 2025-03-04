@@ -10,19 +10,15 @@ LOGOUT_URL = "/api/logout/"
 
 pytestmark = pytest.mark.django_db
 
-
 @pytest.fixture
 def api_client():
     """ Returns an APIClient instance """
     return APIClient()
 
-
 @pytest.fixture
 def create_user(db):
     """ Creates a test user in the database """
     return User.objects.create_user(username="testuser", password="securepassword")
-
-
 
 def test_register_user(api_client):
     """ Test user registration """
@@ -40,7 +36,6 @@ def test_register_with_existing_username(api_client, create_user):
 
     assert response.status_code == 400  # Expect 400 Bad Request
     assert "username" in response.data  # Ensure error is related to username
-
 
 def test_login_user(api_client, create_user):
     """ Test user login """
@@ -68,7 +63,6 @@ def test_logout_user(api_client, create_user):
 
     assert response.status_code == 200
     assert response.data["message"] == "Successfully logged out."
-
 
 def test_logout_without_token(api_client):
     """ Test logout without authentication """

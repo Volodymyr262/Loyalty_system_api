@@ -55,6 +55,20 @@ class LoyaltyProgramViewSet(viewsets.ModelViewSet):
     serializer_class = LoyaltyProgramSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
 
+    def get_queryset(self):
+        return LoyaltyProgram.objects.all()  # Remove owner filtering here
+
+    def get_object(self):
+        """ Ensure object exists and check ownership before returning """
+        obj = super().get_object()
+
+        if obj.owner != self.request.user:
+            raise PermissionDenied("You do not have permission to access this Loyalty Program.")
+
+        return obj
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 class LoyaltyTierViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyTier.objects.all()
