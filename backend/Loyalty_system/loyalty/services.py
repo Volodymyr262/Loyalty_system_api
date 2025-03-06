@@ -1,42 +1,23 @@
 from .models import PointBalance, Transaction, LoyaltyProgram, UserTaskProgress, SpecialTask
 
 
-def earn_points(user_id, program_id, amount):
-    try:
-        program = LoyaltyProgram.objects.get(id=program_id)
-        balance, _ = PointBalance.objects.get_or_create(user_id=user_id, program_id=program_id)
-        balance.add_points(amount*program.point_conversion_rate)
+def earn_points(user_id, program_id, points):
+    """Earn points for a user in a loyalty program."""
+    balance, _ = PointBalance.objects.get_or_create(user_id=user_id, program_id=program_id)
 
-        # Log the transaction
-        Transaction.objects.create(
-            user_id=user_id,
-            program_id=program_id,
-            transaction_type='earn',
-            points=amount
-        )
-        return balance
-    except Exception as e:
-        raise ValueError(f"Error earning points: {e}")
-
+    balance.add_points(points)  # This updates balance and total_points_earned
+    return balance
 
 def redeem_points(user_id, program_id, points):
-    try:
-        program = LoyaltyProgram.objects.get(id=program_id)
-        balance = PointBalance.objects.get(user_id=user_id, program_id=program_id)
-        balance.redeem_points(points)
+    """Redeem points for a user in a loyalty program."""
+    balance = PointBalance.objects.get(user_id=user_id, program_id=program_id)
 
-        # Log the transaction
-        Transaction.objects.create(
-            user_id=user_id,
-            program_id=program_id,
-            transaction_type='redeem',
-            points=points
-        )
-        return balance
-    except PointBalance.DoesNotExist:
-        raise ValueError("Point balance not found")
-    except Exception as e:
-        raise ValueError(f"Error redeeming points: {e}")
+    if balance.balance < points:
+        raise ValueError("Insufficient points")
+
+    balance.redeem_points(points)
+    return balance
+
 
 
 def update_task_progress_for_transaction(transaction):

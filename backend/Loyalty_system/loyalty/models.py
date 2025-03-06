@@ -40,11 +40,11 @@ class PointBalance(models.Model):
         self.save(update_fields=['balance'])
 
     def get_loyalty_tier(self):
-        """ ✅ Dynamically determine the highest tier the user qualifies for based on `total_points_earned` """
+        """Determine the highest tier based on total points earned."""
         eligible_tiers = LoyaltyTier.objects.filter(
             program=self.program,
-            points_to_reach__lte=self.total_points_earned  # ✅ Use `total_points_earned`
-        ).order_by('-points_to_reach')  # Get the highest eligible tier
+            points_to_reach__lte=self.total_points_earned
+        ).order_by('-points_to_reach')
 
         return eligible_tiers.first().tier_name if eligible_tiers.exists() else "No Tier"
 

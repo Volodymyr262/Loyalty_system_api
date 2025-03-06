@@ -75,32 +75,31 @@ class LoyaltyTierViewSet(viewsets.ModelViewSet):
     serializer_class = LoyaltyTierSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
 
+
 class PointBalanceViewSet(viewsets.ModelViewSet):
     queryset = PointBalance.objects.all()
     serializer_class = PointBalanceSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
+
     def list(self, request, *args, **kwargs):
-        """Override list to filter point balances by user_id and program_id."""
-        user_id = request.query_params.get('user_id')  # Query param for user ID
-        program_id = request.query_params.get('program_id')  # Query param for program ID
+        """Filter by user_id and program_id and return 404 if not found."""
+        user_id = request.query_params.get('user_id')
+        program_id = request.query_params.get('program_id')
 
-        # Ensure both parameters are provided
         if not user_id or not program_id:
-            return Response(
-                {"error": "Both user_id and program_id are required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Response({"error": "Both user_id and program_id are required."}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Filter point balance by user_id and program_id
+        # Check if the loyalty program exists and belongs to the current user
+        if not PointBalance.objects.filter(program_id=program_id, program__owner=request.user).exists():
+            return Response({"error": "Unauthorized or invalid program."}, status=status.HTTP_403_FORBIDDEN)
+
         try:
             point_balance = PointBalance.objects.get(user_id=user_id, program_id=program_id)
             serializer = self.get_serializer(point_balance)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except PointBalance.DoesNotExist:
-            return Response(
-                {"error": "Point balance not found for the given user and program."},
-                status=status.HTTP_404_NOT_FOUND
-            )
+            return Response({"error": "Point balance not found."}, status=status.HTTP_404_NOT_FOUND)
+
 
 class TransactionViewSet(viewsets.ModelViewSet):
     queryset = Transaction.objects.all()
