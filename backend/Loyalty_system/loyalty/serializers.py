@@ -44,7 +44,14 @@ class TransactionSerializer(serializers.ModelSerializer):
 class LoyaltyTierSerializer(serializers.ModelSerializer):
     class Meta:
         model = LoyaltyTier
-        fields = '__all__'
+        fields = "__all__"
+        read_only_fields = ["program"]
+
+    def validate(self, data):
+        """Prevent updates to the `program` field after creation."""
+        if self.instance and "program" in data:
+            raise serializers.ValidationError({"program": "You cannot change the program of a loyalty tier."})
+        return data
 
     def validate_points_to_reach(self, value):
         if value <= 0:

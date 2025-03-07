@@ -75,6 +75,18 @@ class LoyaltyTierViewSet(viewsets.ModelViewSet):
     serializer_class = LoyaltyTierSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
 
+    def perform_create(self, serializer):
+        """Automatically set the loyalty program based on request data."""
+        program_id = self.request.data.get("program")  # Extract program ID
+        if not program_id:
+            raise serializers.ValidationError({"program": "This field is required."})
+
+        try:
+            program = LoyaltyProgram.objects.get(id=program_id, owner=self.request.user)
+        except LoyaltyProgram.DoesNotExist:
+            raise serializers.ValidationError({"program": "Invalid program or you do not have permission."})
+
+        serializer.save(program=program)  # ✅ Set program before saving
 
 class PointBalanceViewSet(viewsets.ModelViewSet):
     queryset = PointBalance.objects.all()
