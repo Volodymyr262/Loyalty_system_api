@@ -225,6 +225,7 @@ class UserTaskProgressViewSet(viewsets.ModelViewSet):
     queryset = UserTaskProgress.objects.all()
     serializer_class = UserTaskProgressSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
+
     def create(self, request, *args, **kwargs):
         """
         Create or update progress for a user on a specific task.
@@ -254,3 +255,22 @@ class UserTaskProgressViewSet(viewsets.ModelViewSet):
         return Response(
             self.get_serializer(progress).data,
             status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+
+    def update(self, request, *args, **kwargs):
+        """
+        Update progress and check for task completion.
+        """
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        progress = serializer.save()
+
+        # Check for task completion after update
+        progress.reward_user()
+
+        # Get fresh data from database to include any updates made by reward_user()
+        progress.refresh_from_db()
+
+        return Response(self.get_serializer(progress).data)
