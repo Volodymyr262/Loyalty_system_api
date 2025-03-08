@@ -1,6 +1,4 @@
 from rest_framework import permissions
-
-from rest_framework import permissions
 from .models import UserTaskProgress, SpecialTask
 class IsOwnerOfLoyaltyProgram(permissions.BasePermission):
     """Allow only the owner of the Loyalty Program to access it"""

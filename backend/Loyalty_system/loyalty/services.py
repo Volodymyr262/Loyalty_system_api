@@ -19,25 +19,27 @@ def redeem_points(user_id, program_id, points):
     return balance
 
 
-
 def update_task_progress_for_transaction(transaction):
-    """
-    Update task progress for a transaction.
-    """
-    user = transaction.user
-    program = transaction.program
-    tasks = SpecialTask.objects.filter(program=program)
+    """ Updates the user's task progress when a transaction is created. """
 
-    for task in tasks:
-        # Get or create a progress entry for this task
-        progress, _ = UserTaskProgress.objects.get_or_create(user=user, task=task)
 
-        # Update points and transaction counts
-        progress.points_earned += transaction.points
-        progress.transactions_count += 1
+    user_id = transaction.user_id
 
-        # Check if the task is completed
-        if progress.is_completed():
-            progress.reward_user()
+    #  Retrieve all special tasks for this program
+    special_tasks = SpecialTask.objects.filter(program=transaction.program)
+
+    for task in special_tasks:
+        #  Get or create progress entry for this user and task
+        progress, created = UserTaskProgress.objects.get_or_create(
+            user_id=user_id, task=task
+        )
+
+        #  Update points and transaction count
+        if transaction.transaction_type == "earn":
+            progress.points_earned += transaction.points
+            progress.transactions_count += 1  # Assume each transaction counts as one
 
         progress.save()
+
+        #  Check if the task is now completed
+        progress.reward_user()

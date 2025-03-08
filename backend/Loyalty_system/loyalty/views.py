@@ -114,58 +114,69 @@ class PointBalanceViewSet(viewsets.ModelViewSet):
 
 
 class TransactionViewSet(viewsets.ModelViewSet):
+    """
+    Handles transactions where users earn or redeem points.
+    Transactions can be filtered by user_id, program_id, and date range.
+    """
     queryset = Transaction.objects.all()
     serializer_class = TransactionSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
-    def list(self, request, *args, **kwargs):
-        """Override list to filter transactions by user_id, program_id, and date range."""
-        user_id = request.query_params.get('user_id')
-        program_id = request.query_params.get('program_id')
-        start_date = request.query_params.get('start_date')
-        end_date = request.query_params.get('end_date')
 
-        # Check if program_id is provided
+    def get_queryset(self):
+        """
+        Filters transactions based on user_id, program_id, and optional date range.
+        Ensures only the owner of the loyalty program can access transactions.
+        """
+        user = self.request.user
+        queryset = super().get_queryset()
+
+        # Ensure program_id is provided
+        program_id = self.request.query_params.get("program_id")
         if not program_id:
-            return Response(
-                {"error": "Program ID is required."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            return Transaction.objects.none()  # No program_id, return empty queryset
 
-        # Build a query dynamically
-        filters = Q()
+        # Check if the current user is the owner of the program
+        try:
+            program = LoyaltyProgram.objects.get(id=program_id)
+            if program.owner != user:
+                raise PermissionDenied(
+                    "You do not have permission to view these transactions.")  # 🚨 Explicitly deny access
+        except LoyaltyProgram.DoesNotExist:
+            raise PermissionDenied("Program not found.")  # 🚨 Deny access if program doesn't exist
+
+        # Apply filters if user is the owner
+        filters = {"program_id": program_id}
+        user_id = self.request.query_params.get("user_id")
+        start_date = self.request.query_params.get("start_date")
+        end_date = self.request.query_params.get("end_date")
+
         if user_id:
-            filters &= Q(user_id=user_id)
-        if program_id:
-            filters &= Q(program_id=program_id)
+            filters["user_id"] = user_id
         if start_date and end_date:
-            filters &= Q(timestamp__range=[start_date, end_date])
+            filters["timestamp__range"] = [start_date, end_date]
         elif start_date:
-            filters &= Q(timestamp__gte=start_date)
+            filters["timestamp__gte"] = start_date
         elif end_date:
-            filters &= Q(timestamp__lte=end_date)
+            filters["timestamp__lte"] = end_date
 
-        # Apply the filters
-        transactions = Transaction.objects.filter(filters)
-        serializer = self.get_serializer(transactions, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return queryset.filter(**filters)
 
     @action(detail=False, methods=["post"])
     def create_and_update_task_progress(self, request):
         """
-        Custom action to create a transaction and automatically check task progress.
+        Creates a transaction and automatically checks user task progress.
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        transaction = serializer.save()  # Save the transaction
+        transaction = serializer.save()
 
-        # Update user task progress after transaction creation
+        # Update related user task progress
         update_task_progress_for_transaction(transaction)
 
         return Response(
-            {"message": "Transaction created and progress checked!", "transaction": serializer.data},
+            {"message": "Transaction created and progress updated!", "transaction": serializer.data},
             status=status.HTTP_201_CREATED
         )
-
 
 class PointsViewSet(viewsets.ModelViewSet):
     """
