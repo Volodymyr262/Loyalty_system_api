@@ -28,7 +28,7 @@ class PointBalanceSerializer(serializers.ModelSerializer):
     tier = serializers.SerializerMethodField()
 
     def get_tier(self, obj):
-        return obj.get_loyalty_tier()  # ✅ Include tier dynamically
+        return obj.get_loyalty_tier()  #  Include tier dynamically
 
     class Meta:
         model = PointBalance

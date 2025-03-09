@@ -86,12 +86,13 @@ class LoyaltyTierViewSet(viewsets.ModelViewSet):
         except LoyaltyProgram.DoesNotExist:
             raise serializers.ValidationError({"program": "Invalid program or you do not have permission."})
 
-        serializer.save(program=program)  # ✅ Set program before saving
+        serializer.save(program=program)  #  Set program before saving
 
 class PointBalanceViewSet(viewsets.ModelViewSet):
     queryset = PointBalance.objects.all()
     serializer_class = PointBalanceSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
+
 
     def list(self, request, *args, **kwargs):
         """Filter by user_id and program_id and return 404 if not found."""
