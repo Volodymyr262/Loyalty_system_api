@@ -12,6 +12,7 @@ SECRET_KEY = get_secret('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = ['loyaltysystemapi-production.up.railway.app']
+USE_X_FORWARDED_HOST = True
 
 # Application definition
 INSTALLED_APPS = [
