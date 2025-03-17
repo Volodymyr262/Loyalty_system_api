@@ -1,26 +1,28 @@
-# Use Python 3.12.2 image based on Debian Bullseye in its slim variant as the base image
-FROM python:3.12.2-slim-bullseye
+# Use the official Python image with a slim version for smaller size
+FROM python:3.12-slim
 
-# Set an environment variable to unbuffer Python output, aiding in logging and debugging
-ENV PYTHONBUFFERED=1
+# Set environment variables
+ENV PYTHONUNBUFFERED=1
+ENV PORT=8000
 
-# Define an environment variable for the web service's port, commonly used in cloud services
-ENV PORT 8080
-
-# Set the working directory within the container to /app for any subsequent commands
+# Set the working directory in the container
 WORKDIR /app
 
-# Copy the entire current directory contents into the container at /app
+# Copy project files to the container
 COPY . /app/
 
-# Upgrade pip to ensure we have the latest version for installing dependencies
-RUN pip install --upgrade pip
+# Install system dependencies
+RUN apt-get update && apt-get install -y libpq-dev && apt-get clean
 
-# Install dependencies from the requirements.txt file to ensure our Python environment is ready
+# Upgrade pip and install project dependencies
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Set the command to run our web service using Gunicorn, binding it to 0.0.0.0 and the PORT environment variable
-CMD gunicorn Loyalty_system.wsgi:application --bind 0.0.0.0:"${PORT}"
+# Collect static files (important for production)
+RUN python manage.py collectstatic --noinput
 
-# Inform Docker that the container listens on the specified network port at runtime
+# Expose the port Railway will use
 EXPOSE ${PORT}
+
+# Start Gunicorn server
+CMD gunicorn Loyalty_system.wsgi:application --bind 0.0.0.0:${PORT}

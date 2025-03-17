@@ -85,13 +85,13 @@ DB_USER_PW = get_secret("DB_USER_PW")
 DB_IP = get_secret("DB_IP")
 DB_PORT = get_secret("DB_PORT")
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': DB_NAME,
-        'USER': DB_USER_NM,
-        "PASSWORD": DB_USER_PW,
-        "HOST": DB_IP,
-        "PORT": DB_PORT,
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": os.environ.get("DB_NAME"),
+        "USER": os.environ.get("DB_USER"),
+        "PASSWORD": os.environ.get("DB_PASSWORD"),
+        "HOST": os.environ.get("DB_HOST"),  # Railway provides this
+        "PORT": os.environ.get("DB_PORT", "5432"),
     }
 }
 
