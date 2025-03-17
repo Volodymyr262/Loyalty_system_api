@@ -4,8 +4,11 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# Define get_secret directly
+def get_secret(secret_id, backup=None):
+    return os.getenv(secret_id, backup)
+
 # SECURITY WARNING: keep the secret key used in production secret!
-from Loyalty_system.settings import get_secret
 SECRET_KEY = get_secret('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
