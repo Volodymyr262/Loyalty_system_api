@@ -79,11 +79,7 @@ WSGI_APPLICATION = 'Loyalty_system.wsgi.application'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
 # Change DATABASES to connect to a real database
-DB_NAME = get_secret("DB_NAME")
-DB_USER_NM = get_secret("DB_USER_NM")
-DB_USER_PW = get_secret("DB_USER_PW")
-DB_IP = get_secret("DB_IP")
-DB_PORT = get_secret("DB_PORT")
+
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
