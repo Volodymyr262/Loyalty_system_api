@@ -106,8 +106,15 @@ USE_I18N = True
 USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'  # Ensure this matches the expected URL path
+
+# This should be the absolute path where `collectstatic` places static files
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+# Extra directories where static files might be collected from
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'Loyalty_system', 'static'),
+]
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
