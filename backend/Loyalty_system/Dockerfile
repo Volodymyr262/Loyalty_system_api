@@ -1,28 +1,27 @@
-# Use the official Python image with a slim version for smaller size
+# Use a full Python image instead of slim to avoid missing tools
 FROM python:3.12
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
 ENV PORT=8000
 
-# Set the working directory in the container
+# Set the working directory
 WORKDIR /app
 
-# Copy project files to the container
+# Install system dependencies
+RUN apt-get update && apt-get install -y libpq-dev
+
+# Install pip manually to avoid issues
+RUN python -m ensurepip && python -m pip install --upgrade pip
+
+# Copy the project files
 COPY . /app/
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y libpq-dev && apt-get clean
-
-# Upgrade pip and install project dependencies
-RUN pip install --upgrade pip
+# Install project dependencies
 RUN pip install -r requirements.txt
 
-# Collect static files (important for production)
-RUN python manage.py collectstatic --noinput
-
-# Expose the port Railway will use
+# Expose the port for the application
 EXPOSE ${PORT}
 
 # Start Gunicorn server
-CMD gunicorn Loyalty_system.wsgi:application --bind 0.0.0.0:${PORT}
+CMD ["gunicorn", "Loyalty_system.wsgi:application", "--bind", "0.0.0.0:8000"]
