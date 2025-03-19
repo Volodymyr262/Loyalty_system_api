@@ -14,21 +14,22 @@ RUN apt-get update && apt-get install -y libpq-dev
 # Install pip manually to avoid issues
 RUN python -m ensurepip && python -m pip install --upgrade pip
 
+# Create a virtual environment
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
 # Copy the project files
 COPY . /app/
 
-# Install project dependencies
+# Install project dependencies inside the virtual environment
 RUN pip install -r requirements.txt
 
 # Expose the port for the application
 EXPOSE ${PORT}
 
-# Copy the entrypoint script
+# Copy the entrypoint script and make it executable
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Use the entrypoint script before running Gunicorn
 ENTRYPOINT ["/entrypoint.sh"]
-
-# Start Gunicorn server
-CMD ["gunicorn", "Loyalty_system.wsgi:application", "--bind", "0.0.0.0:8000"]
