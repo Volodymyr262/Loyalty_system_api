@@ -1,5 +1,5 @@
 # Use the official Python image with a slim version for smaller size
-FROM python:3.12-slim
+FROM python:3.12
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1
