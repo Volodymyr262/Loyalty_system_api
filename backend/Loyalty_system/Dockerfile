@@ -23,5 +23,12 @@ RUN pip install -r requirements.txt
 # Expose the port for the application
 EXPOSE ${PORT}
 
+# Copy the entrypoint script
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+# Use the entrypoint script before running Gunicorn
+ENTRYPOINT ["/entrypoint.sh"]
+
 # Start Gunicorn server
 CMD ["gunicorn", "Loyalty_system.wsgi:application", "--bind", "0.0.0.0:8000"]
