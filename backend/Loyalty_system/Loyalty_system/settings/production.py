@@ -2,7 +2,7 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Define get_secret directly
 def get_secret(secret_id, backup=None):
@@ -112,9 +112,7 @@ STATIC_URL = '/static/'  # Ensure this matches the expected URL path
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Extra directories where static files might be collected from
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'Loyalty_system', 'static'),
-]
+STATICFILES_DIRS = []
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
