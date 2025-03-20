@@ -1,4 +1,4 @@
-# Use a full Python image instead of slim to avoid missing tools
+# Use full Python image to avoid missing tools
 FROM python:3.12
 
 # Set environment variables
@@ -11,7 +11,7 @@ WORKDIR /app
 # Install system dependencies
 RUN apt-get update && apt-get install -y libpq-dev
 
-# Install pip manually to avoid issues
+# Install pip manually
 RUN python -m ensurepip && python -m pip install --upgrade pip
 
 # Create a virtual environment
@@ -31,5 +31,5 @@ EXPOSE ${PORT}
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Use the entrypoint script before running Gunicorn
-ENTRYPOINT ["/entrypoint.sh"]
+# Use CMD instead of ENTRYPOINT for flexibility
+CMD ["/bin/sh", "/entrypoint.sh"]
