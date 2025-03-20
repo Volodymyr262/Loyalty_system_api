@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+print(BASE_DIR)
 # Define get_secret directly
 def get_secret(secret_id, backup=None):
     return os.getenv(secret_id, backup)
@@ -109,7 +109,7 @@ USE_TZ = True
 STATIC_URL = '/static/'  # Ensure this matches the expected URL path
 
 # This should be the absolute path where `collectstatic` places static files
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATIC_ROOT = os.path.join(Path(__file__).resolve().parent.parent.parent, 'static')
 
 # Extra directories where static files might be collected from
 STATICFILES_DIRS = []
