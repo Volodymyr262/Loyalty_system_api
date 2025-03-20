@@ -31,5 +31,5 @@ EXPOSE ${PORT}
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Use CMD instead of ENTRYPOINT for flexibility
+# Use CMD to run the script properly
 CMD ["/bin/sh", "/entrypoint.sh"]
