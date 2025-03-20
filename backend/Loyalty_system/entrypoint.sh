@@ -6,8 +6,7 @@ set -e
 echo "Activating virtual environment..."
 . /opt/venv/bin/activate  # Use "." instead of "source" for POSIX compliance
 
-echo "Running migrations..."
-python manage.py migrate --noinput
+
 
 echo "Collecting static files..."
 python manage.py collectstatic --noinput --verbosity 2
