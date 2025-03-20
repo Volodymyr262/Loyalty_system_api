@@ -8,8 +8,6 @@ echo "Activating virtual environment..."
 source /opt/venv/bin/activate
 
 # Run database migrations
-echo "Running migrations..."
-python manage.py migrate --noinput
 
 # Collect static files
 echo "Collecting static files..."
