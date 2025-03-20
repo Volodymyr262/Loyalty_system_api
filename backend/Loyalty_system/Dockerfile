@@ -27,9 +27,5 @@ RUN pip install -r requirements.txt
 # Expose the port for the application
 EXPOSE ${PORT}
 
-# Copy the entrypoint script and make it executable
-COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
-
-# Use CMD to run the script properly
-CMD ["/bin/sh", "/entrypoint.sh"]
+# Start the application using the Procfile command
+CMD ["gunicorn", "Loyalty_system.wsgi:application", "--bind", "0.0.0.0:8000"]
