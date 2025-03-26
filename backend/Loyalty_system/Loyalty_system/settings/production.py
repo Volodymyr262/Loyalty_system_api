@@ -15,11 +15,21 @@ SECRET_KEY = get_secret('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['loyaltysystemapi-production.up.railway.app']
+ALLOWED_HOSTS = ['*']
 USE_X_FORWARDED_HOST = True
+
+CORS_ALLOWED_ORIGINS = [
+    "https://loyaltysystemapi-production.up.railway.app"]
+
+
+SWAGGER_SETTINGS = {
+    "USE_SESSION_AUTH": False,
+    "SECURE_SCHEMA": "https",  # 🔹 Force Swagger to use HTTPS
+}
 
 # Application definition
 INSTALLED_APPS = [
+    'corsheaders'
     'drf_yasg',
     'loyalty',
     'rest_framework',
@@ -33,6 +43,7 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
