@@ -29,7 +29,7 @@ SWAGGER_SETTINGS = {
 
 # Application definition
 INSTALLED_APPS = [
-    'corsheaders'
+    'corsheaders',
     'drf_yasg',
     'loyalty',
     'rest_framework',
