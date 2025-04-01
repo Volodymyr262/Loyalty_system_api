@@ -25,6 +25,11 @@ CORS_ALLOW_CREDENTIALS = True  # 🔥 Required if using authentication
 CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["Authorization", "Content-Type", "X-CSRFToken"]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # 🚀 Required for Railway HTTPS
+SECURE_SSL_REDIRECT = True  # 🔥 Redirect all HTTP to HTTPS
+SESSION_COOKIE_SECURE = True  # Secure cookies
+CSRF_COOKIE_SECURE = True  # Secure CSRF cookie
+
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
     "SECURE_SCHEMA": "https",  # 🔹 Force Swagger to use HTTPS
