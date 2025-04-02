@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db.models import Q
 from rest_framework import viewsets, status, permissions, generics
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.models import Token
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.decorators import action
@@ -54,6 +55,7 @@ class LoyaltyProgramViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyProgram.objects.all()
     serializer_class = LoyaltyProgramSerializer
     permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
+    authentication_classes = [TokenAuthentication]
 
     def get_queryset(self):
         return LoyaltyProgram.objects.all()  # Remove owner filtering here
