@@ -33,7 +33,7 @@ router.register(r'user-task-progress', UserTaskProgressViewSet, basename='user-t
 urlpatterns = [
     path('api/', include(router.urls)),
     path('', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('/api/register/', RegisterView.as_view(), name='register'),  #  Register
-    path('/api/login/', LoginView.as_view(), name='login'),
-    path('/api/logout/', LogoutView.as_view(), name='logout'),  #  Logout
+    path('api/register/', RegisterView.as_view(), name='register'),  #  Register
+    path('api/login/', LoginView.as_view(), name='login'),
+    path('api/logout/', LogoutView.as_view(), name='logout'),  #  Logout
 ]
