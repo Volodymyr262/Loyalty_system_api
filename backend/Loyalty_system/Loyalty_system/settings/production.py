@@ -29,6 +29,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # 🚀 Required f
 SECURE_SSL_REDIRECT = True  # 🔥 Redirect all HTTP to HTTPS
 SESSION_COOKIE_SECURE = True  # Secure cookies
 CSRF_COOKIE_SECURE = True  # Secure CSRF cookie
+APPEND_SLASH = True
 
 SWAGGER_SETTINGS = {
     "USE_SESSION_AUTH": False,
