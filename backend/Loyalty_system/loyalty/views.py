@@ -53,7 +53,7 @@ class LogoutView(APIView):
 class LoyaltyProgramViewSet(viewsets.ModelViewSet):
     queryset = LoyaltyProgram.objects.all()
     serializer_class = LoyaltyProgramSerializer
-    # permission_classes = [permissions.IsAuthenticated, IsOwnerOfLoyaltyProgram]
+    permission_classes = [IsOwnerOfLoyaltyProgram]
 
     def get_queryset(self):
         return LoyaltyProgram.objects.all()  # Remove owner filtering here
