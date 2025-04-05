@@ -26,7 +26,8 @@ CORS_ALLOW_METHODS = ["GET", "POST", "PUT", "DELETE", "OPTIONS"]
 CORS_ALLOW_HEADERS = ["Authorization", "Content-Type", "X-CSRFToken"]
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')  # 🚀 Required for Railway HTTPS
-SECURE_SSL_REDIRECT = True  # 🔥 Redirect all HTTP to HTTPS
+SECURE_SSL_REDIRECT = not os.getenv("DISABLE_SSL_REDIRECT_FOR_TESTS", False)
+
 SESSION_COOKIE_SECURE = True  # Secure cookies
 CSRF_COOKIE_SECURE = True  # Secure CSRF cookie
 APPEND_SLASH = True

@@ -27,6 +27,17 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Token-based authentication using "Token <your-token>"',
+        }
+    },
+    'USE_SESSION_AUTH': False,  # Hide the login/logout buttons
+}
 
 # Application definition
 

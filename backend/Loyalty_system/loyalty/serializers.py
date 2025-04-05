@@ -32,7 +32,7 @@ class PointBalanceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = PointBalance
-        fields = ['id', 'user_id', 'balance', 'total_points_earned', 'program', 'tier']
+        fields = ['id', 'user_id', 'balance', 'program', 'tier']
 
 
 class TransactionSerializer(serializers.ModelSerializer):
