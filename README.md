@@ -56,9 +56,10 @@ All endpoints are prefixed with: `/api/`
 ---
 
 ## 🛠️ Tech Stack
- -Python 3.12
- -Django 4.2
- -Django REST Framework
- -PostgreSQL 
- -Pytest
+
+ - Python 3.12
+ - Django 4.2
+ - Django REST Framework
+ - PostgreSQL 
+ - Pytest
  ---
