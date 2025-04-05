@@ -1,4 +1,5 @@
-# 🏆 Loyalty Program API (DEMO https://loyaltysystemapi-production.up.railway.app/)
+# 🏆 Loyalty Program API 
+(DEMO https://loyaltysystemapi-production.up.railway.app/)
 
 A Django REST Framework-based API that powers a Loyalty Program system. Admin users (program owners) can manage loyalty programs, while registered users can earn and redeem points within those programs. The API uses token-based authentication and enforces strict permission rules.
 
