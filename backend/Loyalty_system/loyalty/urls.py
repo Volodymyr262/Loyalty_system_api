@@ -8,6 +8,15 @@ from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
 
+SECURITY_DEFINITIONS = {
+    'Token': {
+        'type': 'apiKey',
+        'name': 'Authorization',
+        'in': 'header',
+        'description': 'Token-based authentication using "Token <token>"',
+    }
+}
+
 schema_view = get_schema_view(
     openapi.Info(
         title="Loyalty System API",
@@ -20,6 +29,7 @@ schema_view = get_schema_view(
     public=True,
     authentication_classes=[TokenAuthentication],
     permission_classes=(permissions.AllowAny,),
+    security_definitions=SECURITY_DEFINITIONS,
 )
 
 router = DefaultRouter()
