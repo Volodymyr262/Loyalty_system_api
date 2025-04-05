@@ -52,17 +52,6 @@ All endpoints are prefixed with: `/api/`
 
 > 🔐 Auth required. Point operations are permission-controlled by program ownership.
 
----
-
-## 🛡️ Security & Permissions
-
-- All endpoints require **Token Authentication**
-- Only **Admins** (program owners) can:
-  - Register
-  - Manage loyalty programs
-  - View and control point balances
-- Regular users **cannot** register themselves
-- Users can only see their own balances (or are managed internally)
 
 ---
 
@@ -72,3 +61,4 @@ All endpoints are prefixed with: `/api/`
  -Django REST Framework
  -PostgreSQL 
  -Pytest
+ ---
