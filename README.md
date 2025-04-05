@@ -46,7 +46,7 @@ All endpoints are prefixed with: `/api/`
 
 | Method | Endpoint                                   | Description                                           |
 |--------|--------------------------------------------|-------------------------------------------------------|
-| GET    | `/point-balances/?program_id={id}`         | Get current user's point balance in a program         |
+| GET    | `/point-balances/?program_id={id}`         | Get user's point balance in a program         |
 | POST   | `/point-balances/earn/`                    | Earn points (Admin-controlled or via external action) |
 | POST   | `/point-balances/redeem/`                  | Redeem points from a program                         |
 
