@@ -32,8 +32,15 @@ CSRF_COOKIE_SECURE = True  # Secure CSRF cookie
 APPEND_SLASH = True
 
 SWAGGER_SETTINGS = {
-    "USE_SESSION_AUTH": False,
-    "SECURE_SCHEMA": "https",  # 🔹 Force Swagger to use HTTPS
+    'SECURITY_DEFINITIONS': {
+        'Token': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': 'Token-based authentication using "Token <your-token>"',
+        }
+    },
+    'USE_SESSION_AUTH': False,  # Hide the login/logout buttons
 }
 
 # Application definition
