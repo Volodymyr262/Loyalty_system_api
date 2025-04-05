@@ -1,5 +1,6 @@
 from django.urls import path, include
 from rest_framework import permissions
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.routers import DefaultRouter
 from .views import LoyaltyProgramViewSet, PointBalanceViewSet, TransactionViewSet, PointsViewSet, LoyaltyTierViewSet, \
     UserTaskProgressViewSet, SpecialTaskViewSet, RegisterView, LoginView, LogoutView
@@ -17,6 +18,7 @@ schema_view = get_schema_view(
         license=openapi.License(name="BSD License"),
     ),
     public=True,
+    authentication_classes=[TokenAuthentication],
     permission_classes=(permissions.AllowAny,),
 )
 
