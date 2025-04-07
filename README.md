@@ -85,14 +85,14 @@ This API is designed for **admins who own external applications** (e.g. e-commer
 - Django REST Framework
 - PostgreSQL
 - Swagger (drf-yasg)
-- Hosted on [Railway](https://railway.app)
+- Hosted on [Railway](https://railway.ap)
 
 ---
 
 ## 📚 Documentation
 
 Access Swagger UI at root path `/`  
-e.g. [https://your-app.up.railway.app/](https://your-app.up.railway.app/)
+e.g. (https://loyaltysystemapi-production.up.railway.app/)
 
 ---
 
