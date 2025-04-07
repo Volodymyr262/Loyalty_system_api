@@ -1,18 +1,17 @@
-# 🏆 Loyalty Program API 
-(DEMO https://loyaltysystemapi-production.up.railway.app/)
+# 🏆 Loyalty Program API
 
-A Django REST Framework-based API that powers a Loyalty Program system. Admin users (program owners) can manage loyalty programs, while registered users can earn and redeem points within those programs. The API uses token-based authentication and enforces strict permission rules.
+A Django REST Framework-powered API that enables **application owners (admins)** to integrate a **loyalty program system** into their own apps. Admins can manage loyalty points, tiers, and user tasks through a secure and scalable backend API.
 
 ---
 
-## 🚀 Features
+## 🎯 Project Purpose
 
-- Admin registration & authentication
-- Loyalty program creation & management
-- Assign users to programs and track point balances
-- Point earning and redemption per user per program
-- Automatic tier assignment based on balance
+This API is designed for **admins who own external applications** (e.g. e-commerce platforms, mobile apps, SaaS tools) and want to offer loyalty rewards to their users. Each admin manages:
 
+- A unique **Loyalty Program**
+- A list of **end-users** (customers)
+- **Points** assigned per user based on actions
+- Custom **tiers** and **tasks** for user engagement
 
 ---
 
@@ -55,7 +54,7 @@ A Django REST Framework-based API that powers a Loyalty Program system. Admin us
 ### 📊 Point Balance
 | Method | Endpoint                           | Description                                               |
 |--------|------------------------------------|-----------------------------------------------------------|
-| GET    | `/api/point-balances/?program_id=` | Get point balance for logged-in user & program ID         |
+| GET    | `/api/point-balances/?program_id=` | Get point balances for owner of Loyalty program           |
 | POST   | `/api/point-balances/`             | Manually create a point balance                           |
 
 ### ➕ Points Actions
