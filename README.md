@@ -16,50 +16,91 @@ A Django REST Framework-based API that powers a Loyalty Program system. Admin us
 
 ---
 
-## 📚 API Endpoints Overview
+## 🔗 API Endpoints
 
-All endpoints are prefixed with: `/api/`
+### 🔐 Authentication
+| Method | Endpoint         | Description                      |
+|--------|------------------|----------------------------------|
+| POST   | `/api/register/` | Register a new admin user        |
+| POST   | `/api/login/`    | Login and receive auth token     |
+| POST   | `/api/logout/`   | Logout and revoke auth token     |
 
-### 🔐 Authentication (Admins Only)
+### 🧠 Loyalty Program
+| Method | Endpoint                    | Description                            |
+|--------|-----------------------------|----------------------------------------|
+| GET    | `/api/loyalty-programs/`    | List all loyalty programs owned by admin |
+| POST   | `/api/loyalty-programs/`    | Create a new loyalty program           |
+| GET    | `/api/loyalty-programs/{id}/` | Retrieve a specific loyalty program   |
+| PUT    | `/api/loyalty-programs/{id}/` | Update a loyalty program              |
+| DELETE | `/api/loyalty-programs/{id}/` | Delete a loyalty program              |
 
-| Method | Endpoint             | Description                         |
-|--------|----------------------|-------------------------------------|
-| POST   | `/register/`         | Register a new admin user           |
-| POST   | `/login/`            | Login and receive auth token        |
-| POST   | `/logout/`           | Logout and revoke auth token        |
+### 💎 Tiers
+| Method | Endpoint                | Description                          |
+|--------|-------------------------|--------------------------------------|
+| GET    | `/api/loyalty-tiers/`  | List all tiers for a program         |
+| POST   | `/api/loyalty-tiers/`  | Create a new tier                    |
+| GET    | `/api/loyalty-tiers/{id}/` | Retrieve a specific tier           |
+| PUT    | `/api/loyalty-tiers/{id}/` | Update tier details                |
+| DELETE | `/api/loyalty-tiers/{id}/` | Delete a tier                      |
 
----
+### ⭐ Special Tasks
+| Method | Endpoint                    | Description                            |
+|--------|-----------------------------|----------------------------------------|
+| GET    | `/api/special-tasks/`       | List all special tasks                 |
+| POST   | `/api/special-tasks/`       | Create a new task                      |
+| GET    | `/api/special-tasks/{id}/`  | Get task details                       |
+| PUT    | `/api/special-tasks/{id}/`  | Update a task                          |
+| DELETE | `/api/special-tasks/{id}/`  | Delete a task                          |
 
-### 🏢 Loyalty Programs (Admins Only)
+### 📊 Point Balance
+| Method | Endpoint                           | Description                                               |
+|--------|------------------------------------|-----------------------------------------------------------|
+| GET    | `/api/point-balances/?program_id=` | Get point balance for logged-in user & program ID         |
+| POST   | `/api/point-balances/`             | Manually create a point balance                           |
 
-| Method | Endpoint                         | Description                                |
-|--------|----------------------------------|--------------------------------------------|
-| GET    | `/loyalty-programs/`             | List programs owned by the admin           |
-| POST   | `/loyalty-programs/`             | Create a new loyalty program               |
-| GET    | `/loyalty-programs/{id}/`        | Retrieve a specific program                |
-| PUT    | `/loyalty-programs/{id}/`        | Update a program                           |
-| DELETE | `/loyalty-programs/{id}/`        | Delete a program                           |
+### ➕ Points Actions
+| Method | Endpoint              | Description                                |
+|--------|-----------------------|--------------------------------------------|
+| POST   | `/api/points/earn/`   | Add points to a user’s balance             |
+| POST   | `/api/points/redeem/` | Redeem points from a user’s balance        |
 
----
+### 📈 Transactions
+| Method | Endpoint              | Description                                |
+|--------|-----------------------|--------------------------------------------|
+| GET    | `/api/transactions/`  | List all transactions by user or program   |
+| POST   | `/api/transactions/`  | Create a new transaction                   |
 
-### 💰 Point Balances
-
-| Method | Endpoint                                   | Description                                           |
-|--------|--------------------------------------------|-------------------------------------------------------|
-| GET    | `/point-balances/?program_id={id}`         | Get user's point balance in a program         |
-| POST   | `/point-balances/earn/`                    | Earn points (Admin-controlled or via external action) |
-| POST   | `/point-balances/redeem/`                  | Redeem points from a program                         |
-
-> 🔐 Auth required. Point operations are permission-controlled by program ownership.
-
+### 📌 User Task Progress
+| Method | Endpoint                            | Description                              |
+|--------|-------------------------------------|------------------------------------------|
+| GET    | `/api/user-task-progress/`          | List progress for all tasks              |
+| POST   | `/api/user-task-progress/`          | Create user task progress entry          |
+| PUT    | `/api/user-task-progress/{id}/`     | Update task progress (e.g., mark done)   |
 
 ---
 
 ## 🛠️ Tech Stack
 
- - Python 3.12
- - Django 4.2
- - Django REST Framework
- - PostgreSQL 
- - Pytest
- ---
+- Python 3.12
+- Django 4.2
+- Django REST Framework
+- PostgreSQL
+- Swagger (drf-yasg)
+- Hosted on [Railway](https://railway.app)
+
+---
+
+## 📚 Documentation
+
+Access Swagger UI at root path `/`  
+e.g. [https://your-app.up.railway.app/](https://your-app.up.railway.app/)
+
+---
+
+## 🔐 Authentication Method
+
+This API uses **Token Authentication**.  
+Once logged in, include this in your headers:
+
+```http
+Authorization: Token <your-token>
